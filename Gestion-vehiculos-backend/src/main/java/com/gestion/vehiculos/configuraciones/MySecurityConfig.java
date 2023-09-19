@@ -49,7 +49,7 @@ public class MySecurityConfig {
                 .cors()
                 .disable()
                 .authorizeRequests()
-                .requestMatchers("/generate-token","/api/").permitAll()
+                .requestMatchers("/api/v1/auth","/api/").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -1,11 +1,16 @@
 package com.gestion.vehiculos.Entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gestion.vehiculos.modelo.Authority;
 
 import jakarta.persistence.*;
 
@@ -31,6 +36,10 @@ public class Usuarios implements UserDetails {
 	@OneToOne
 	@JoinColumn(name = "id_empleado")
 	private Empleado empleado;
+	
+	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "usuario")
+    @JsonIgnore
+	private List<UsuarioRol> usuarioRoles = new ArrayList<>();
 
 	public Usuarios() {
 		super();
@@ -85,11 +94,22 @@ public class Usuarios implements UserDetails {
 	public void setEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
+	
+	public List<UsuarioRol> getUsuarioRoles() {
+		return usuarioRoles;
+	}
+
+	public void setUsuarioRoles(List<UsuarioRol> usuarioRoles) {
+		this.usuarioRoles = usuarioRoles;
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+        List<Authority> autoridades = new ArrayList<>();
+        this.usuarioRoles.forEach(usuarioRol -> {
+            autoridades.add(new Authority(usuarioRol.getRol().getRolNombre()));
+        });
+        return autoridades;
 	}
 
 	@Override
